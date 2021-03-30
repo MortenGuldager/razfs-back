@@ -1,0 +1,13 @@
+---
+- name: mkdir base_path
+  file: 
+    name: "{{ base_path }}/{{ item }}"
+    state: directory
+  loop:
+    - etc
+    - status
+
+- name: put config
+  copy: 
+    src: "etc/config.yml"
+    dest: "{{ base_path }}/etc"

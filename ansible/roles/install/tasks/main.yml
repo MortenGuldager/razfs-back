@@ -1,0 +1,44 @@
+---
+- name: install python3 stuff
+  apt:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - python3-pip
+    - python3-venv
+    - python-setuptools
+
+- name: mkdir base_path
+  file: 
+    name: "{{ base_path }}/bin"
+    state: directory
+
+- name: copy over program files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ base_path }}/bin"
+  loop:
+    - src/main.py
+    - src/exclusive_yaml.py
+    - src/util.py
+    - src/maintain_snapshots.py
+    - src/run-it-all.sh
+
+- name: set exec bit
+  file: 
+    dest: "{{ base_path }}/bin/run-it-all.sh"
+    mode: a+x
+
+- name: add to crontab
+  cron:
+    name: added by ansible
+    minute: "1"
+    hour: "0"
+    job: "{{ base_path }}/bin/run-it-all.sh >> {{ base_path }}/run-it-all.log 2&1"
+
+- name: make venv
+  pip:
+    name: pyaml
+    virtualenv: "{{ base_path }}/venv"
+    virtualenv_command: /usr/bin/python3 -m venv
+    #virtualenv_python: /usr/bin/python3

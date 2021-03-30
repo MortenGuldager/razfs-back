@@ -1,0 +1,7 @@
+---
+- name: install
+  hosts: razfs_back
+
+  roles:
+    - install
+    - configure
