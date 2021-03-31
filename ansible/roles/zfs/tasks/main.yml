@@ -1,0 +1,34 @@
+---
+- name: install zfs-fuse
+  apt:
+    state: latest
+    name: "{{ item }}"
+  loop:
+    - zfs-fuse
+    - hdparm
+
+- name: set drive spindown time
+  blockinfile:
+    path: /etc/hdparm.conf
+    state: present
+    block: |
+      /dev/sda { 
+        spindown_time = 120 
+      }
+
+
+- name: start zfs daemon
+  systemd:
+    state: started
+    enabled: yes
+    name: zfs-fuse
+
+- name: Create zpool
+  command: zpool create -O compression=gzip Z /dev/sda -o ashift=12
+    creates=/Z
+
+- name: Create zfs
+  community.general.zfs:
+    name: Z/BA
+    state: present
+    

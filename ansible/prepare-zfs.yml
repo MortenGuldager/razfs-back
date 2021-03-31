@@ -1,0 +1,7 @@
+---
+- name: prepare zfs
+  hosts: razfs_back
+
+  roles:
+    - zfs
+    

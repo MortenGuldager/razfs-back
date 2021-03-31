@@ -3,6 +3,7 @@
   apt:
     name: "{{ item }}"
     state: latest
+
   loop:
     - python3-pip
     - python3-venv
@@ -15,19 +16,23 @@
 
 - name: copy over program files
   copy:
-    src: "{{ item }}"
+    src: "src/{{ item }}"
     dest: "{{ base_path }}/bin"
   loop:
-    - src/main.py
-    - src/exclusive_yaml.py
-    - src/util.py
-    - src/maintain_snapshots.py
-    - src/run-it-all.sh
+    - main.py
+    - exclusive_yaml.py
+    - util.py
+    - maintain_snapshots.py
+    - run-it-all.sh
+    - prepare-zfs.sh
 
 - name: set exec bit
   file: 
-    dest: "{{ base_path }}/bin/run-it-all.sh"
+    dest: "{{ base_path }}/bin/{{ item }}"
     mode: a+x
+  loop:
+    - run-it-all.sh
+    - prepare-zfs.sh
 
 - name: add to crontab
   cron:
